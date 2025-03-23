@@ -13,6 +13,12 @@ def users(request):
     data = UserSerializer(users, many=True).data
     return Response(data)
 
+@api_view(['GET'])
+def user(request, pk):
+    user = User.objects.get(id = pk)
+    data = UserSerializer(user , many=False).data
+    return Response(data)
+
 @api_view(['POST'])
 def register(request):
     data = request.data

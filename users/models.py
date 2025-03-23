@@ -8,6 +8,7 @@ class Utilisateur(AbstractUser):
         ('etudiant', 'Étudiant'),
     ]
     role = models.CharField(max_length=10, choices=ROLES, default='etudiant')
-
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return f"{self.username} ({self.role})" 
