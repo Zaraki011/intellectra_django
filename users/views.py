@@ -47,6 +47,7 @@ def login(request):
 
     refresh = RefreshToken.for_user(user)
     return Response({
+        "id": user.id,
         "access": str(refresh.access_token),
         "refresh": str(refresh),
         "role": user.role 
