@@ -6,13 +6,13 @@ from .serializers import CourseSerializer, CategorySerializer
 @api_view(['GET'])
 def courses(request):
     courses = Course.objects.all()
-    data = CourseSerializer(courses, many=True).data
+    data = CourseSerializer(courses, many=True, context={'request': request}).data
     return Response(data)
 
 @api_view(['GET'])
 def categories(request):
     categories = Category.objects.all()
-    data = CategorySerializer(categories, many=True).data
+    data = CategorySerializer(categories, many=True, context={'request': request}).data
     return Response(data)
     
 

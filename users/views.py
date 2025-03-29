@@ -10,13 +10,13 @@ User = get_user_model()
 @api_view(['GET'])
 def users(request):
     users = User.objects.all()
-    data = UserSerializer(users, many=True).data
+    data = UserSerializer(users, many=True, context={'request': request}).data
     return Response(data)
 
 @api_view(['GET'])
 def user(request, pk):
     user = User.objects.get(id = pk)
-    data = UserSerializer(user , many=False).data
+    data = UserSerializer(user , many=False, context={'request': request}).data
     return Response(data)
 
 @api_view(['POST'])

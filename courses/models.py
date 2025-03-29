@@ -4,10 +4,12 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    categoryImage = models.ImageField(upload_to='images/', null=True, blank=True)
+    categoryName = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
 
     def __str__(self):
-        return self.name
+        return self.categoryName
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -19,6 +21,7 @@ class Course(models.Model):
     rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     professor = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
