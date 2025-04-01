@@ -7,9 +7,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    professor = serializers.CharField(source='professor.get_full_name', read_only=True)
+    category = serializers.CharField(source='category.categoryName', read_only=True)
     file = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
+    
 
     def get_file(self, obj):
         if obj.file:  
