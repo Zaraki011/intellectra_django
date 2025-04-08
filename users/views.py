@@ -40,10 +40,10 @@ def register(request):
 
 @api_view(['POST'])
 def login(request):
-    username = request.data.get("username")
+    email = request.data.get("email")
     password = request.data.get("password")
 
-    user = User.objects.filter(username=username).first()
+    user = User.objects.filter(email=email).first()
     if user is None or not user.check_password(password):
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 

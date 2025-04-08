@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Category, CourseSection, CoursePdfInternal, Quiz, Question, Choice, QuizResult
+from .models import Course, Category, CourseSection, CoursePdfInternal, Quiz, Question, Choice, QuizResult, Review, EnrolledCourse
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,3 +69,19 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'professor']
+
+class ReviewSerializer(serializers.ModelSerializer):
+    etudiant = serializers.StringRelatedField(read_only=True)  # affichera le nom de l'étudiant
+
+    class Meta:
+        model = Review
+        fields = ['id', 'cours', 'etudiant', 'note', 'commentaire', 'date_creation']
+        read_only_fields = ['id', 'etudiant', 'date_creation']
+
+class EnrolledCourseSerializer(serializers.ModelSerializer):
+    etudiant = serializers.StringRelatedField(read_only=True)  # afficher nom utilisateur
+
+    class Meta:
+        model = EnrolledCourse
+        fields = ['id', 'cours', 'etudiant', 'date_inscription']
+        read_only_fields = ['id', 'etudiant', 'date_inscription']

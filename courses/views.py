@@ -1,10 +1,11 @@
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
-from .models import Course, Category, Quiz, Question, Choice, QuizResult
+from rest_framework import status, generics, permissions
+from .models import Course, Category, Quiz, Question, Choice, QuizResult, EnrolledCourse, Review
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.shortcuts import get_object_or_404
-from .serializers import CourseSerializer, CategorySerializer
+from .serializers import CourseSerializer, CategorySerializer, EnrolledCourseSerializer, ReviewSerializer
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -71,3 +72,45 @@ def submit_quiz(request):
         'message': 'Quiz submitted successfully',
         'score': score
     })
+
+class EnrollCourseView(generics.CreateAPIView):
+    serializer_class = EnrolledCourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        cours_id = request.data.get('cours')
+
+        if not cours_id:
+            return Response({"error": "cours ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Vérifie s'il est déjà inscrit
+        if EnrolledCourse.objects.filter(cours_id=cours_id, etudiant=request.user).exists():
+            return Response({"message": "Déjà inscrit à ce cours."}, status=status.HTTP_200_OK)
+
+        # Crée l'inscription
+        inscription = EnrolledCourse.objects.create(cours_id=cours_id, etudiant=request.user)
+        serializer = self.get_serializer(inscription)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class MyEnrolledCoursesView(generics.ListAPIView):
+    serializer_class = EnrolledCourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return EnrolledCourse.objects.filter(etudiant=self.request.user)
+
+
+class CreateReviewView(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(etudiant=self.request.user)
+
+class CourseReviewsView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        cours_id = self.kwargs['cours_id']
+        return Review.objects.filter(cours_id=cours_id).order_by('-date_creation')

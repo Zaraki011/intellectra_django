@@ -4,6 +4,7 @@ import json
 import re # Import regex
 import fitz  # PyMuPDF
 from django.db import models
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
@@ -177,6 +178,30 @@ class CourseSection(models.Model):
     def __str__(self):
         # Adjust __str__ to reflect the new relationship
         return f"{self.pdf_data.course.title} - Section {self.order}: {self.title}"
+
+
+class Review(models.Model):
+    cours = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='reviews')
+    etudiant = models.ForeignKey(User, on_delete=models.CASCADE)
+    note = models.IntegerField()
+    commentaire = models.TextField()
+    date_creation = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.etudiant.username} - {self.cours.title} - {self.note}/5"
+
+
+class EnrolledCourse(models.Model):
+    cours = models.ForeignKey(Course, on_delete=models.CASCADE)
+    etudiant = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_inscription = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('cours', 'etudiant')
+
+    def __str__(self):
+        return f"{self.etudiant.username} inscrit à {self.cours.title}"
+
 
 # No pre_save needed now
 
