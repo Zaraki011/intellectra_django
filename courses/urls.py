@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import courses, categories, course, quizzes, submit_quiz, add_course, EnrollCourseView, CreateReviewView
+from .views import courses, categories, course, quizzes, submit_quiz, add_course, EnrollCourseView, CreateReviewView, CourseReviewsView, MyEnrolledCoursesView
 
 
 
